@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 .lightTileColor {
-	background-color: #b57d45;
+	background-color: #cac8c7;
 }
 
 .darkTileColor {
-	background-color: #f2dcb6;
+	background-color: #eeece8;
 }
