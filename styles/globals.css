@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.lightTileColor {
+	background-color: #b57d45;
+}
+
+.darkTileColor {
+	background-color: #f2dcb6;
+}

@@ -1,11 +1,13 @@
-import type { NextPage } from 'next';
+import { DndProvider } from 'react-dnd';
+import ChessGameComponent from '../components/ChessGame';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
-const Home: NextPage = () => {
+function App() {
 	return (
-		<div className="flex h-screen justify-center items-center">
-			<h1 className="font-bold text-3xl">Hello tailwind</h1>
+		<div className="App">
+			<ChessGameComponent />
 		</div>
 	);
-};
+}
 
-export default Home;
+export default App;
