@@ -8,7 +8,7 @@ interface IPiece {
 export default function PieceBase(props: IPiece) {
 	return (
 		<>
-			<div className="text-[40px] font-bold cursor-move">
+			<div className="text-[40px] font-bold cursor-pointer">
 				<img
 					src={props.image}
 					alt="piece image"
