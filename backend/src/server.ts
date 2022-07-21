@@ -8,11 +8,21 @@ interface Player {
 	ws?: WebSocket;
 }
 
+interface Move {
+	from: number;
+	to: number;
+	// for castling
+	move?: Move;
+	// for promoting
+	becomeTo?: number;
+}
+
 interface Game {
 	gameId: string;
 	white: Player;
 	black: Player;
 	watchers: WebSocket[];
+	moves: Move[];
 }
 
 const games: Game[] = [];
@@ -36,6 +46,7 @@ app.get('/create', (_req, res) => {
 			id: blackId,
 		},
 		watchers: [],
+		moves: [],
 	});
 	res.status(201).send(
 		JSON.stringify({

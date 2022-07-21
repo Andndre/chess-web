@@ -1,11 +1,11 @@
 import ChessGameComponent from '../components/ChessGame';
 
-function App() {
+function EasyMode() {
 	return (
 		<div className="h-screen flex justify-center items-center">
-			<ChessGameComponent ai="no-ai" />
+			<ChessGameComponent ai="easy" />
 		</div>
 	);
 }
 
-export default App;
+export default EasyMode;

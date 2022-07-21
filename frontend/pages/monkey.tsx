@@ -1,11 +1,11 @@
 import ChessGameComponent from '../components/ChessGame';
 
-function App() {
+function MonkeyMode() {
 	return (
 		<div className="h-screen flex justify-center items-center">
-			<ChessGameComponent ai="no-ai" />
+			<ChessGameComponent ai="monkey" />
 		</div>
 	);
 }
 
-export default App;
+export default MonkeyMode;

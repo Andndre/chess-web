@@ -1,16 +1,25 @@
-import { ChessGame, Color } from 'chess_typescript';
+import { AI, ChessGame, Color } from 'chess_typescript';
 import { Piece } from './Piece';
 import { getIndex } from 'chess_typescript';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Utils } from 'chess_typescript';
+import { AIMode } from '../types/ai';
 
 interface IBoard {
 	game: ChessGame;
+	ai: AIMode;
 }
 
 export default function Board(props: IBoard) {
 	const [chessGame, setChessGame] = useState(props.game);
 	const [selected, setSelected] = useState(-1);
+
+	useEffect(() => {
+		chessGame.onGameOver[0] = () => {
+			console.log('The game is over: ' + chessGame.gameOverReason + '!');
+		};
+		setChessGame(chessGame);
+	}, []);
 
 	const getColor = (x: number, y: number) => {
 		return (x + y) % 2 == 0 ? 'darkTileColor' : 'lightTileColor';
@@ -50,15 +59,25 @@ export default function Board(props: IBoard) {
 	};
 
 	const handleClick = (x: number, y: number) => {
+		if (chessGame.gameOver) return;
 		const index = getIndex(x, y);
 		if (selected !== -1) {
 			const avMoves = chessGame.mover.allMoves[selected];
 			for (const avMove of avMoves) {
 				if (avMove.to.index === index) {
-					chessGame.mover.selectTile(avMove.from.index);
-					chessGame.mover.selectTile(avMove.to.index);
-					setChessGame(chessGame);
+					chessGame.mover.moveStrict(avMove.from.index, avMove.to.index);
 					setSelected(-1);
+					if (props.ai !== 'no-ai') {
+						const ai =
+							props.ai === 'easy'
+								? new AI.EasyAI(chessGame)
+								: new AI.MonkeyAI(chessGame);
+						const move = ai.getMove();
+						if (move) {
+							chessGame.mover.moveStrict(move.from, move.to);
+						}
+					}
+					setChessGame(chessGame);
 					return;
 				}
 			}
