@@ -4,8 +4,9 @@
 	"main": "src/server.ts",
 	"license": "MIT",
 	"scripts": {
-		"dev": "nodemon src/server.ts",
-		"start": "ts-node src/server.ts"
+		"start": "ts-node --transpile-only src/server.ts",
+		"devWatch": "nodemon src/server.ts",
+		"dev": "ts-node src/server.ts"
 	},
 	"devDependencies": {
 		"@types/cors": "^2.8.12",
