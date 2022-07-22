@@ -5,13 +5,15 @@ function App() {
 	const [playAsBlack, setPlayAsBlack] = useState('');
 	const [watchLink, setwatchLink] = useState('');
 	const getLink = async () => {
-		const res = await fetch('http://localhost:3333/create');
+		const res = await fetch(
+			'https://chess-web-production.up.railway.app/create'
+		);
 		const json = await res.json();
-		const baseUrl =
-			'http://localhost:3000/online?gameId=' + json.gameId + '&roleKey=';
-		setPlayAsWhite(baseUrl + json.whiteId);
-		setPlayAsBlack(baseUrl + json.blackId);
-		setwatchLink(baseUrl + json.watchKey);
+		const url =
+			'chess-web-ten.vercel.app/online?gameId=' + json.gameId + '&roleKey=';
+		setPlayAsWhite(url + json.whiteId);
+		setPlayAsBlack(url + json.blackId);
+		setwatchLink(url + json.watchKey);
 	};
 	return (
 		<div className="h-screen flex flex-col gap-3 justify-center items-center">
@@ -36,34 +38,22 @@ function App() {
 			</p>
 			<h2 className="font-bold text-4xl">Play with computer</h2>
 			<div className="flex gap-2">
-				<a
-					className="bg-orange-400"
-					href="http://localhost:3000/computer?ai=easy"
-				>
+				<a className="bg-orange-400" href={'/computer?ai=easy'}>
 					Easy mode (as white)
 				</a>
-				<a
-					className="bg-orange-400"
-					href="http://localhost:3000/computer?asBlack=1&ai=easy"
-				>
+				<a className="bg-orange-400" href={'/computer?asBlack=1&ai=easy'}>
 					Easy mode (as black)
 				</a>
 			</div>
 			<div className="flex gap-2">
-				<a
-					className="bg-orange-400"
-					href="http://localhost:3000/computer?ai=monkey"
-				>
+				<a className="bg-orange-400" href={'/computer?ai=monkey'}>
 					Random mode (as white)
 				</a>
-				<a
-					className="bg-orange-400"
-					href="http://localhost:3000/computer?asBlack=1&ai=monkey"
-				>
+				<a className="bg-orange-400" href={'/computer?asBlack=1&ai=monkey'}>
 					Random mode (as black)
 				</a>
 			</div>
-			<a className="bg-orange-400" href="http://localhost:3000/computer">
+			<a className="bg-orange-400" href={'/computer'}>
 				Local multiplayer
 			</a>
 		</div>

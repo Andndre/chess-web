@@ -10,7 +10,10 @@ interface IBoard {
 
 export default function ChessOnline(props: IBoard) {
 	const [selected, setSelected] = useState(-1);
-	const webSocket = useMemo(() => new WebSocket('ws://localhost:3333/ws'), []);
+	const webSocket = useMemo(
+		() => new WebSocket('wss://chess-web-production.up.railway.app/ws'),
+		[]
+	);
 	const [watching, setWatching] = useState(false);
 	const [freezed, setFreezed] = useState(false);
 	const [asBlack, setAsBlack] = useState(false);
