@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 .lightTileColor {
-	background-color: #cac8c7;
+	background-color: #ecdd92;
 }
 
 .darkTileColor {
-	background-color: #eeece8;
+	background-color: #b49860;
 }
 
 img {

@@ -442,10 +442,10 @@ chalk@^4.0.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-chess_typescript@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/chess_typescript/-/chess_typescript-0.1.6.tgz#51cd5b666f26d42545f302a783f7d99c53091f13"
-  integrity sha512-Gc5b+ies6q4MkZdAc3jF+hDluycNAYM7TuRTyMLTAp4/0xJIwjpUnBYzCdoe78T3FmVZABfFxXVFap7EmNDdOg==
+chess_typescript@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/chess_typescript/-/chess_typescript-0.2.0.tgz#5c00940202df4ca4ac0a7c6c1893f7cbad5fd1b6"
+  integrity sha512-gI3+kifBgeAwXnqQ9mG312BUQyd1lpUyTB/lEkt2dtGKUPWJjQceXEHaurEP95V8WUP8BzdUqTkDx0fZ+cLjUA==
 
 chokidar@^3.5.3:
   version "3.5.3"
