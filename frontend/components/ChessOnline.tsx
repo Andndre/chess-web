@@ -108,7 +108,7 @@ export default function ChessOnline(props: IBoard) {
 					setFreezed(true);
 					// if promote
 					if (
-						lastMove.to.type !== game.board.tiles[lastMove.to.index].getType()
+						lastMove.from.type !== game.board.tiles[lastMove.to.index].getType()
 					) {
 						setPromoteIndex(lastMove.to.index);
 						return;
