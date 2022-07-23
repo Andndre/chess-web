@@ -13,13 +13,6 @@ interface IBoard {
 
 // TODO: make this responsive (currently overflowed on small screen devices)
 export default function Board(props: IBoard) {
-	const getY = (y: number) => {
-		if (props.asBlack) {
-			return 7 - y;
-		}
-		return y;
-	};
-
 	const getColor = (x: number, y: number) => {
 		return (x + y) % 2 == 0 ? 'darkTileColor' : 'lightTileColor';
 	};
@@ -62,39 +55,41 @@ export default function Board(props: IBoard) {
 		return col;
 	};
 
-	const listOf8 = [0, 1, 2, 3, 4, 5, 6, 7];
+	const listOf8 = props.asBlack
+		? [7, 6, 5, 4, 3, 2, 1, 0]
+		: [0, 1, 2, 3, 4, 5, 6, 7];
 
 	return (
 		<div className="w-[524px] h-[524px] shadow-lg rounded-md overflow-clip">
 			<div className="flex-col aspect-square">
 				{listOf8.map((y) => {
 					return (
-						<div key={`row-${getY(y)}`} className="flex w-full h-[12.5%]">
+						<div key={`row-${y}`} className="flex w-full h-[12.5%]">
 							{listOf8.map((x) => {
 								return (
 									<div
-										key={`row-${getY(y)}_col-${x}`}
-										className={`w-[12.5%] ${getColor(x, getY(y))}`}
+										key={`row-${y}_col-${x}`}
+										className={`w-[12.5%] ${getColor(x, y)}`}
 										onClick={() => {
-											props.onClick(x, getY(y));
+											props.onClick(x, y);
 										}}
 									>
 										<div
 											className={`w-full h-full ${getOverlayColor(
 												x,
-												getY(y),
+												y,
 												props.game,
 												props.selected
 											)}`}
 										>
-											{props.promoteIndex !== getIndex(x, getY(y)) ? (
+											{props.promoteIndex !== getIndex(x, y) ? (
 												<Piece
 													type={props.game.board.tiles[
-														getIndex(x, getY(y))
+														getIndex(x, y)
 													].getType()}
-													black={props.game.board.tiles[
-														getIndex(x, getY(y))
-													].isColor(Color.black)}
+													black={props.game.board.tiles[getIndex(x, y)].isColor(
+														Color.black
+													)}
 												/>
 											) : (
 												<div className="flex flex-col w-full h-full cursor-pointer">
@@ -108,7 +103,7 @@ export default function Board(props: IBoard) {
 															<Piece
 																type={Type.queen}
 																black={props.game.board.tiles[
-																	getIndex(x, getY(y))
+																	getIndex(x, y)
 																].isColor(Color.black)}
 															/>
 														</div>
@@ -121,7 +116,7 @@ export default function Board(props: IBoard) {
 															<Piece
 																type={Type.rook}
 																black={props.game.board.tiles[
-																	getIndex(x, getY(y))
+																	getIndex(x, y)
 																].isColor(Color.black)}
 															/>
 														</div>
@@ -136,7 +131,7 @@ export default function Board(props: IBoard) {
 															<Piece
 																type={Type.knight}
 																black={props.game.board.tiles[
-																	getIndex(x, getY(y))
+																	getIndex(x, y)
 																].isColor(Color.black)}
 															/>
 														</div>
@@ -149,7 +144,7 @@ export default function Board(props: IBoard) {
 															<Piece
 																type={Type.bishop}
 																black={props.game.board.tiles[
-																	getIndex(x, getY(y))
+																	getIndex(x, y)
 																].isColor(Color.black)}
 															/>
 														</div>
