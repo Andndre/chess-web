@@ -1,5 +1,4 @@
-import { AI, ChessGame, Type } from 'chess_typescript';
-import { getIndex } from 'chess_typescript';
+import { AI, ChessGame, Type, getIndex } from 'chess_typescript';
 import { useEffect, useState } from 'react';
 import { AIMode } from '../types/ai';
 import Board from './Board';
@@ -64,6 +63,7 @@ export default function BoardOffline(props: IBoard) {
 				if (avMove.to.index === index) {
 					props.game.mover.moveStrict(avMove.from.index, avMove.to.index);
 					const lastMove = props.game.mover.getLastMove();
+					console.log(lastMove);
 					if (
 						lastMove.from.type !==
 						props.game.board.tiles[lastMove.to.index].getType()

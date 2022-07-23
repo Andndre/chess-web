@@ -1,5 +1,4 @@
-import { ChessGame, Type } from 'chess_typescript';
-import { getIndex } from 'chess_typescript';
+import { ChessGame, Type, getIndex } from 'chess_typescript';
 import { useEffect, useMemo, useState } from 'react';
 import Board from './Board';
 
