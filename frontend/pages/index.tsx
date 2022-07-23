@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 function App() {
 	return (
 		<div className="relative">
@@ -23,13 +25,12 @@ function App() {
 								Coming soon
 							</div>
 							or
-							<a
-								href="https://github.com/Andndre/chess-bot"
-								className="px-5 py-3 flex items-center gap-2 font-bold rounded-lg border-gray-700 border-[6px]"
-							>
-								<img className="h-[24px]" src="github.png" alt="github" />
-								Host it Yourself
-							</a>
+							<Link href="https://github.com/Andndre/chess-bot">
+								<a className="px-5 py-3 flex items-center gap-2 font-bold rounded-lg border-gray-700 border-[6px]">
+									<img className="h-[24px]" src="github.png" alt="github" />
+									Host it Yourself
+								</a>
+							</Link>
 						</div>
 					</section>
 					<section className="min-h-screen flex flex-col gap-2 items-center justify-center">
@@ -40,40 +41,34 @@ function App() {
 						<div className="flex gap-4 items-center font-bold text-lg p-2 bg-slate-400">
 							<div className="w-24">Easy</div>
 							<div className="flex w-24 h-11">
-								<a
-									href="/computer?ai=easy"
-									className="w-1/2 h-full bg-slate-200 cursor-pointer"
-								/>
-								<a
-									href="/computer?ai=easy&asBlack=1"
-									className="w-1/2 h-full bg-gray-800 cursor-pointer"
-								/>
+								<Link href="/computer?ai=easy">
+									<a className="w-1/2 h-full bg-slate-200 cursor-pointer" />
+								</Link>
+								<Link href="/computer?ai=easy&asBlack=1">
+									<a className="w-1/2 h-full bg-gray-800 cursor-pointer" />
+								</Link>
 							</div>
 						</div>
 						<div className="flex gap-4 items-center font-bold text-lg p-2 bg-slate-400">
 							<div className="w-24">Monkey</div>
 							<div className="flex w-24 h-11">
-								<a
-									href="/computer?ai=monkey"
-									className="w-1/2 h-full bg-slate-200 cursor-pointer"
-								/>
-								<a
-									href="/computer?ai=monkey&asBlack=1"
-									className="w-1/2 h-full bg-gray-800 cursor-pointer"
-								/>
+								<Link href="/computer?ai=monkey">
+									<a className="w-1/2 h-full bg-slate-200 cursor-pointer" />
+								</Link>
+								<Link href="/computer?ai=monkey&asBlack=1">
+									<a className="w-1/2 h-full bg-gray-800 cursor-pointer" />
+								</Link>
 							</div>
 						</div>
 						<div className="flex gap-4 items-center font-bold text-lg p-2 bg-slate-400">
 							<div className="w-24">Local multiplayer</div>
 							<div className="flex w-24 h-11">
-								<a
-									href="/computer"
-									className="w-1/2 h-full bg-slate-200 cursor-pointer"
-								/>
-								<a
-									href="/computer?asBlack=1"
-									className="w-1/2 h-full bg-gray-800 cursor-pointer"
-								/>
+								<Link href="/computer">
+									<a className="w-1/2 h-full bg-slate-200 cursor-pointer" />
+								</Link>
+								<Link href="/computer?asBlack=1">
+									<a className="w-1/2 h-full bg-gray-800 cursor-pointer" />
+								</Link>
 							</div>
 						</div>
 					</section>
