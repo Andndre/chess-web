@@ -15,7 +15,6 @@ export default function BoardOffline(props: IBoard) {
 	const [promoteIndex, setPromoteIndex] = useState(-1);
 
 	useEffect(() => {
-		// TODO: make this a popup, AND send it to the server then finally close the game on the server (without waiting for 60 minutes)
 		props.game.onGameOver = () => {
 			console.log('The game is over: ' + props.game.gameOverReason + '!');
 		};
