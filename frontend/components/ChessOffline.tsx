@@ -1,4 +1,4 @@
-import { AI, ChessGame } from 'chess_typescript';
+import { AI, ChessGame, Type } from 'chess_typescript';
 import { getIndex } from 'chess_typescript';
 import { useEffect, useState } from 'react';
 import { AIMode } from '../types/ai';
@@ -12,6 +12,7 @@ interface IBoard {
 
 export default function BoardOffline(props: IBoard) {
 	const [selected, setSelected] = useState(-1);
+	const [promoteIndex, setPromoteIndex] = useState(-1);
 
 	useEffect(() => {
 		// TODO: make this a popup, AND send it to the server then finally close the game on the server (without waiting for 60 minutes)
@@ -33,6 +34,28 @@ export default function BoardOffline(props: IBoard) {
 		console.log('asblack: ' + props.asBlack);
 	}, [props.asBlack, props.ai]);
 
+	const onPromoteSelected = (type: Type) => {
+		const lastMove = props.game.mover.getLastMove();
+		lastMove.to.type = type;
+		props.game.board.tiles[lastMove.to.index].code = lastMove.from.color | type;
+		props.game.mover.next();
+		setSelected(-1);
+		if (props.ai !== 'no-ai') {
+			const ai =
+				props.ai === 'easy'
+					? new AI.EasyAI(props.game)
+					: new AI.MonkeyAI(props.game);
+			const move = ai.getMove();
+			if (move) {
+				props.game.mover.moveStrict(move.from, move.to);
+				if (!props.game.gameOver) {
+					props.game.mover.next();
+				}
+			}
+		}
+		setPromoteIndex(-1);
+	};
+
 	const handleClick = (x: number, y: number) => {
 		if (props.game.gameOver) return;
 		const index = getIndex(x, y);
@@ -41,6 +64,16 @@ export default function BoardOffline(props: IBoard) {
 			for (const avMove of avMoves) {
 				if (avMove.to.index === index) {
 					props.game.mover.moveStrict(avMove.from.index, avMove.to.index);
+					const lastMove = props.game.mover.getLastMove();
+					if (
+						lastMove.from.type !==
+						props.game.board.tiles[lastMove.to.index].getType()
+					) {
+						console.log('not the same type');
+
+						setPromoteIndex(lastMove.to.index);
+						return;
+					}
 					props.game.mover.next();
 					setSelected(-1);
 					if (props.ai !== 'no-ai') {
@@ -70,6 +103,8 @@ export default function BoardOffline(props: IBoard) {
 			selected={selected}
 			asBlack={props.asBlack}
 			onClick={handleClick}
+			promoteIndex={promoteIndex}
+			onPromoteSelected={onPromoteSelected}
 		/>
 	);
 }

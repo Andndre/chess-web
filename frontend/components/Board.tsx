@@ -1,4 +1,4 @@
-import { ChessGame, Color, Utils } from 'chess_typescript';
+import { ChessGame, Color, Type, Utils } from 'chess_typescript';
 import { Piece } from './Piece';
 import { getIndex } from 'chess_typescript';
 
@@ -7,6 +7,8 @@ interface IBoard {
 	asBlack: boolean;
 	onClick: (x: number, y: number) => void;
 	selected: number;
+	promoteIndex: number;
+	onPromoteSelected: (type: Type) => void;
 }
 
 // TODO: make this responsive (currently overflowed on small screen devices)
@@ -85,14 +87,75 @@ export default function Board(props: IBoard) {
 												props.selected
 											)}`}
 										>
-											<Piece
-												type={props.game.board.tiles[
-													getIndex(x, getY(y))
-												].getType()}
-												black={props.game.board.tiles[
-													getIndex(x, getY(y))
-												].isColor(Color.black)}
-											/>
+											{props.promoteIndex !== getIndex(x, getY(y)) ? (
+												<Piece
+													type={props.game.board.tiles[
+														getIndex(x, getY(y))
+													].getType()}
+													black={props.game.board.tiles[
+														getIndex(x, getY(y))
+													].isColor(Color.black)}
+												/>
+											) : (
+												<div className="flex flex-col w-full h-full cursor-pointer">
+													<div className="flex w-full h-1/2">
+														<div
+															className="w-1/2 h-full"
+															onClick={() => {
+																props.onPromoteSelected(Type.queen);
+															}}
+														>
+															<Piece
+																type={Type.queen}
+																black={props.game.board.tiles[
+																	getIndex(x, getY(y))
+																].isColor(Color.black)}
+															/>
+														</div>
+														<div
+															className="w-1/2 h-full"
+															onClick={() => {
+																props.onPromoteSelected(Type.rook);
+															}}
+														>
+															<Piece
+																type={Type.rook}
+																black={props.game.board.tiles[
+																	getIndex(x, getY(y))
+																].isColor(Color.black)}
+															/>
+														</div>
+													</div>
+													<div className="flex w-full h-1/2">
+														<div
+															className="w-1/2 h-full"
+															onClick={() => {
+																props.onPromoteSelected(Type.knight);
+															}}
+														>
+															<Piece
+																type={Type.knight}
+																black={props.game.board.tiles[
+																	getIndex(x, getY(y))
+																].isColor(Color.black)}
+															/>
+														</div>
+														<div
+															className="w-1/2 h-full"
+															onClick={() => {
+																props.onPromoteSelected(Type.bishop);
+															}}
+														>
+															<Piece
+																type={Type.bishop}
+																black={props.game.board.tiles[
+																	getIndex(x, getY(y))
+																].isColor(Color.black)}
+															/>
+														</div>
+													</div>
+												</div>
+											)}
 										</div>
 									</div>
 								);

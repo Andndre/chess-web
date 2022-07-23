@@ -1,4 +1,4 @@
-import { ChessGame } from 'chess_typescript';
+import { ChessGame, Type } from 'chess_typescript';
 import { getIndex } from 'chess_typescript';
 import { useEffect, useMemo, useState } from 'react';
 import Board from './Board';
@@ -14,6 +14,7 @@ export default function ChessOnline(props: IBoard) {
 		() => new WebSocket('wss://chess-web-production.up.railway.app/ws'),
 		[]
 	);
+	const [promoteIndex, setPromoteIndex] = useState(-1);
 	const [watching, setWatching] = useState(false);
 	const [freezed, setFreezed] = useState(false);
 	const [asBlack, setAsBlack] = useState(false);
@@ -62,6 +63,7 @@ export default function ChessOnline(props: IBoard) {
 					// rerender
 					setSelected((prev) => prev - 1);
 					setFreezed(false);
+				} else if (json.type === 'error') {
 				}
 			};
 		};
@@ -73,6 +75,26 @@ export default function ChessOnline(props: IBoard) {
 		return 'white';
 	};
 
+	const onPromoteSelected = (type: Type) => {
+		const lastMove = game.mover.getLastMove();
+		lastMove.to.type = type;
+		game.board.tiles[lastMove.to.index].code = lastMove.from.color | type;
+		game.mover.next();
+		webSocket.send(
+			JSON.stringify({
+				type: 'move',
+				gameId: props.gameId,
+				role: getRole(),
+				move: {
+					from: lastMove.from.index,
+					to: lastMove.to.index,
+					becomeTo: type,
+				},
+			})
+		);
+		setPromoteIndex(-1);
+	};
+
 	const handleClick = (x: number, y: number) => {
 		if (watching || freezed || game.gameOver) return;
 		const index = getIndex(x, y);
@@ -81,9 +103,17 @@ export default function ChessOnline(props: IBoard) {
 			for (const avMove of avMoves) {
 				if (avMove.to.index === index) {
 					game.mover.moveStrict(avMove.from.index, avMove.to.index);
-					game.mover.next();
+					const lastMove = game.mover.getLastMove();
 					setSelected(-1);
 					setFreezed(true);
+					// if promote
+					if (
+						lastMove.to.type !== game.board.tiles[lastMove.to.index].getType()
+					) {
+						setPromoteIndex(lastMove.to.index);
+						return;
+					}
+					game.mover.next();
 					webSocket.send(
 						JSON.stringify({
 							type: 'move',
@@ -102,7 +132,7 @@ export default function ChessOnline(props: IBoard) {
 		setSelected(index);
 	};
 
-	if (!connected) return <div>CONNECTING...</div>;
+	if (!connected) return <div className="center">Connecting...</div>;
 
 	return (
 		<Board
@@ -110,6 +140,8 @@ export default function ChessOnline(props: IBoard) {
 			selected={selected}
 			asBlack={asBlack}
 			onClick={handleClick}
+			promoteIndex={promoteIndex}
+			onPromoteSelected={onPromoteSelected}
 		/>
 	);
 }

@@ -8,17 +8,21 @@
 	</head>
 	<body>
 		<script>
-			const ws = new WebSocket(
-				'ws://localhost:3333/ws?join=e98wfudfjoiesf9edf'
-			);
-			ws.onopen = () => {
-				console.log('opened');
-				ws.send(
-					JSON.stringify({
-						message: 'hello from frontend',
-					})
-				);
-			};
+			fetch('http://localhost:3333/games', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					gameId: 'dc80256b-5cd6-4eaf-b76a-51848e5832c9',
+				}),
+			})
+				.then((res) => {
+					return res.json();
+				})
+				.then((json) => {
+					console.log(json);
+				});
 		</script>
 	</body>
 </html>

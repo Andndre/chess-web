@@ -10,6 +10,14 @@
 	background-color: #b49860;
 }
 
+.center {
+	@apply h-screen flex justify-center items-center;
+}
+
+body {
+	background: #dcbe92;
+}
+
 img {
 	/* user-drag: none; */
 	-webkit-user-drag: none;
@@ -17,4 +25,12 @@ img {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
+}
+
+.text-chess {
+	color: #8f8562;
+}
+
+.text-discord {
+	color: #9071eb;
 }

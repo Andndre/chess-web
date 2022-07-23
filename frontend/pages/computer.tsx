@@ -9,7 +9,7 @@ function App() {
 	const router = useRouter();
 
 	return (
-		<div className="h-screen flex justify-center items-center">
+		<div className="center">
 			<ChessOffline
 				ai={getAI(router.query.ai as string)}
 				game={chessGame}

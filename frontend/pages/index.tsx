@@ -1,61 +1,84 @@
-import { useState } from 'react';
-
 function App() {
-	const [playAsWhite, setPlayAsWhite] = useState('');
-	const [playAsBlack, setPlayAsBlack] = useState('');
-	const [watchLink, setwatchLink] = useState('');
-	const getLink = async () => {
-		const res = await fetch(
-			'https://chess-web-production.up.railway.app/create'
-		);
-		const json = await res.json();
-		const url =
-			'chess-web-ten.vercel.app/online?gameId=' + json.gameId + '&roleKey=';
-		setPlayAsWhite(url + json.whiteId);
-		setPlayAsBlack(url + json.blackId);
-		setwatchLink(url + json.watchKey);
-	};
 	return (
-		<div className="h-screen flex flex-col gap-3 justify-center items-center">
-			<h1 className="font-bold text-5xl">
-				HOME PAGE (have not designed it yet).
-			</h1>
-			<h2 className="font-bold text-4xl">Online Mode</h2>
-			<div className="flex">
-				<button className="bg-blue-400" onClick={getLink}>
-					Get game links (Online mode)
-				</button>
-				(If the game link is not played in 10 minutes, it will delete itself.)
+		<div className="relative">
+			<img className="w-screen absolute z-0 top-0" src="herobg.svg" alt="bg" />
+			<div className="absolute z-10 w-full">
+				<div className="pt-36 px-4 text-center">
+					<section className="min-h-screen items-center w-full flex flex-col">
+						<h1 className="font-bold text-4xl md:text-5xl lg:text-6xl max-w-4xl text-gray-700">
+							The Easiest Way to <span className="text-chess">Play Chess</span>{' '}
+							With Your <span className="text-discord">Discord</span> Friends
+						</h1>
+						<div className="pt-12"></div>
+						<img
+							className="w-full max-w-4xl rounded-lg overflow-hidden"
+							src="screenshot.png"
+							alt="screenshot"
+						/>
+						<div className="pt-12"></div>
+						<div className="flex gap-2 sm:gap-5 items-center md:text-xl">
+							<div className="px-5 py-3 bg-gray-600 border-gray-600 border-[6px] rounded-lg font-bold text-gray-400 cursor-not-allowed">
+								Invite Bot
+								<br />
+								Coming soon
+							</div>
+							or
+							<a
+								href="https://github.com/Andndre/chess-bot"
+								className="px-5 py-3 flex items-center gap-2 font-bold rounded-lg border-gray-700 border-[6px]"
+							>
+								<img className="h-[24px]" src="github.png" alt="github" />
+								Host it Yourself
+							</a>
+						</div>
+					</section>
+					<section className="min-h-screen flex flex-col gap-2 items-center justify-center">
+						<h2 className="font-bold text-3xl md:text-4xl lg:text-5xl">
+							Offline mode
+						</h2>
+						<div className="pt-4"></div>
+						<div className="flex gap-4 items-center font-bold text-lg p-2 bg-slate-400">
+							<div className="w-24">Easy</div>
+							<div className="flex w-24 h-11">
+								<a
+									href="/computer?ai=easy"
+									className="w-1/2 h-full bg-slate-200 cursor-pointer"
+								/>
+								<a
+									href="/computer?ai=easy&asBlack=1"
+									className="w-1/2 h-full bg-gray-800 cursor-pointer"
+								/>
+							</div>
+						</div>
+						<div className="flex gap-4 items-center font-bold text-lg p-2 bg-slate-400">
+							<div className="w-24">Monkey</div>
+							<div className="flex w-24 h-11">
+								<a
+									href="/computer?ai=monkey"
+									className="w-1/2 h-full bg-slate-200 cursor-pointer"
+								/>
+								<a
+									href="/computer?ai=monkey&asBlack=1"
+									className="w-1/2 h-full bg-gray-800 cursor-pointer"
+								/>
+							</div>
+						</div>
+						<div className="flex gap-4 items-center font-bold text-lg p-2 bg-slate-400">
+							<div className="w-24">Local multiplayer</div>
+							<div className="flex w-24 h-11">
+								<a
+									href="/computer"
+									className="w-1/2 h-full bg-slate-200 cursor-pointer"
+								/>
+								<a
+									href="/computer?asBlack=1"
+									className="w-1/2 h-full bg-gray-800 cursor-pointer"
+								/>
+							</div>
+						</div>
+					</section>
+				</div>
 			</div>
-			<p>
-				Play as white: <span className="bg-orange-400">{playAsWhite}</span>
-			</p>
-			<p>
-				Play as black: <span className="bg-orange-400">{playAsBlack}</span>
-			</p>
-			<p>
-				watch: <span className="bg-orange-400">{watchLink}</span>
-			</p>
-			<h2 className="font-bold text-4xl">Play with computer</h2>
-			<div className="flex gap-2">
-				<a className="bg-orange-400" href={'/computer?ai=easy'}>
-					Easy mode (as white)
-				</a>
-				<a className="bg-orange-400" href={'/computer?asBlack=1&ai=easy'}>
-					Easy mode (as black)
-				</a>
-			</div>
-			<div className="flex gap-2">
-				<a className="bg-orange-400" href={'/computer?ai=monkey'}>
-					Random mode (as white)
-				</a>
-				<a className="bg-orange-400" href={'/computer?asBlack=1&ai=monkey'}>
-					Random mode (as black)
-				</a>
-			</div>
-			<a className="bg-orange-400" href={'/computer'}>
-				Local multiplayer
-			</a>
 		</div>
 	);
 }
