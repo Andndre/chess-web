@@ -16,7 +16,7 @@ function App() {
 			</Head>
 			<div className="relative">
 				<svg
-					className="w-screen absolute z-0 top-0"
+					className="w-full absolute z-0 top-0"
 					viewBox="0 0 1440 653"
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg"
