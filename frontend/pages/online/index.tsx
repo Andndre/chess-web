@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import ChessOnline from '../../components/ChessOnline';
 
@@ -8,10 +9,15 @@ function App() {
 		return <div className="center">Reading Input..</div>;
 
 	return (
-		<ChessOnline
-			gameId={router.query.gameId as string}
-			roleKey={router.query.roleKey as string}
-		/>
+		<>
+			<Head>
+				<title>Chess - Online</title>
+			</Head>
+			<ChessOnline
+				gameId={router.query.gameId as string}
+				roleKey={router.query.roleKey as string}
+			/>
+		</>
 	);
 }
 
