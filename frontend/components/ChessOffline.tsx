@@ -33,9 +33,7 @@ export default function BoardOffline(props: IBoard) {
 	}, [props.asBlack, props.ai]);
 
 	const onPromoteSelected = (type: Type) => {
-		const lastMove = props.game.mover.getLastMove();
-		lastMove.to.type = type;
-		props.game.board.tiles[lastMove.to.index].code = lastMove.from.color | type;
+		props.game.mover.promoteLastMoveTo(type);
 		props.game.mover.next();
 		setSelected(-1);
 		if (props.ai !== 'no-ai') {
@@ -64,10 +62,7 @@ export default function BoardOffline(props: IBoard) {
 					props.game.mover.moveStrict(avMove.from.index, avMove.to.index);
 					const lastMove = props.game.mover.getLastMove();
 					console.log(lastMove);
-					if (
-						lastMove.from.type !==
-						props.game.board.tiles[lastMove.to.index].getType()
-					) {
+					if (props.game.mover.isPromote()) {
 						console.log('not the same type');
 
 						setPromoteIndex(lastMove.to.index);

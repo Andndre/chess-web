@@ -76,8 +76,7 @@ export default function ChessOnline(props: IBoard) {
 
 	const onPromoteSelected = (type: Type) => {
 		const lastMove = game.mover.getLastMove();
-		lastMove.to.type = type;
-		game.board.tiles[lastMove.to.index].code = lastMove.from.color | type;
+		game.mover.promoteLastMoveTo(type);
 		game.mover.next();
 		webSocket.send(
 			JSON.stringify({
@@ -105,10 +104,7 @@ export default function ChessOnline(props: IBoard) {
 					const lastMove = game.mover.getLastMove();
 					setSelected(-1);
 					setFreezed(true);
-					// if promote
-					if (
-						lastMove.from.type !== game.board.tiles[lastMove.to.index].getType()
-					) {
+					if (game.mover.isPromote()) {
 						setPromoteIndex(lastMove.to.index);
 						return;
 					}
