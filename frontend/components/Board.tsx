@@ -9,6 +9,7 @@ interface IBoard {
 	selected: number;
 	promoteIndex: number;
 	onPromoteSelected: (type: Type) => void;
+	size: number;
 }
 
 // TODO: make this responsive (currently overflowed on small screen devices)
@@ -60,7 +61,13 @@ export default function Board(props: IBoard) {
 		: [0, 1, 2, 3, 4, 5, 6, 7];
 
 	return (
-		<div className="w-[524px] h-[524px] shadow-lg rounded-md overflow-clip">
+		<div
+			style={{
+				width: props.size,
+				height: props.size,
+			}}
+			className={`shadow-lg rounded-md overflow-clip`}
+		>
 			<div className="flex-col aspect-square">
 				{listOf8.map((y) => {
 					return (

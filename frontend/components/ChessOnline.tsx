@@ -1,5 +1,6 @@
 import { ChessGame, Type, getIndex } from 'chess_typescript';
 import { useEffect, useMemo, useState } from 'react';
+import { useWindowSize } from '../hooks/useWindowSize';
 import Board from './Board';
 
 interface IBoard {
@@ -19,6 +20,13 @@ export default function ChessOnline(props: IBoard) {
 	const [asBlack, setAsBlack] = useState(false);
 	const game = useMemo(() => ChessGame.newStandardGame(), []);
 	const [connected, setConnected] = useState(false);
+	const windowSize = useWindowSize();
+
+	const boardSize = useMemo(() => {
+		let res = Math.min(windowSize.width, windowSize.height);
+
+		return res;
+	}, [windowSize.width, windowSize.height]);
 
 	useEffect(() => {
 		webSocket.onopen = (_ev) => {
@@ -132,8 +140,9 @@ export default function ChessOnline(props: IBoard) {
 	return (
 		<Board
 			game={game}
-			selected={selected}
+			size={boardSize}
 			asBlack={asBlack}
+			selected={selected}
 			onClick={handleClick}
 			promoteIndex={promoteIndex}
 			onPromoteSelected={onPromoteSelected}

@@ -1,5 +1,6 @@
 import { AI, ChessGame, Type, getIndex } from 'chess_typescript';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useWindowSize } from '../hooks/useWindowSize';
 import { AIMode } from '../types/ai';
 import Board from './Board';
 
@@ -12,6 +13,12 @@ interface IBoard {
 export default function BoardOffline(props: IBoard) {
 	const [selected, setSelected] = useState(-1);
 	const [promoteIndex, setPromoteIndex] = useState(-1);
+	const windowSize = useWindowSize();
+
+	const boardSize = useMemo(
+		() => Math.min(windowSize.width, windowSize.height),
+		[windowSize.width, windowSize.height]
+	);
 
 	useEffect(() => {
 		props.game.onGameOver = () => {
@@ -93,6 +100,7 @@ export default function BoardOffline(props: IBoard) {
 
 	return (
 		<Board
+			size={boardSize}
 			game={props.game}
 			selected={selected}
 			asBlack={props.asBlack}
