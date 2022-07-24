@@ -13,7 +13,7 @@ interface IBoard {
 export default function BoardOffline(props: IBoard) {
 	const [selected, setSelected] = useState(-1);
 	const [promoteIndex, setPromoteIndex] = useState(-1);
-	const windowSize = useWindowSize();
+	const windowSize = useWindowSize(0, 0);
 
 	const boardSize = useMemo(
 		() => Math.min(windowSize.width, windowSize.height),

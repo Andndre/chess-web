@@ -47,14 +47,14 @@ var ws_1 = require("ws");
 var uuid_1 = require("uuid");
 var cors_1 = __importDefault(require("cors"));
 var db_1 = require("./db");
-console.log(process.env.DB_URL);
 var games = new Map();
 var connections = new Map();
 var app = (0, express_1["default"])();
 app.use((0, cors_1["default"])());
+app.use(express_1["default"].json());
 var httpServer = (0, http_1.createServer)(app);
 var wss = new ws_1.WebSocketServer({ server: httpServer, path: '/ws' });
-app.get('/create', function (_req, res) {
+app.get('/create', function (req, res) {
     var whiteId = (0, uuid_1.v4)();
     var blackId = (0, uuid_1.v4)();
     var gameId = (0, uuid_1.v4)();
@@ -70,6 +70,7 @@ app.get('/create', function (_req, res) {
         watchers: [],
         moves: []
     });
+    console.log(req.url + ' created a new game');
     // delete game when no one is playing the game in 6 minutes
     setTimeout(function () {
         var game = games.get(gameId);
@@ -97,6 +98,14 @@ wss.on('connection', function (ws, _req) {
             var roleKey = json.roleKey;
             var gameId = json.gameId;
             var game = games.get(gameId);
+            if (!game) {
+                ws.send(JSON.stringify({
+                    type: 'error',
+                    errorType: 'game-not-found'
+                }));
+                ws.close();
+                return;
+            }
             var res_role = '';
             if (roleKey === game.watchKey) {
                 res_role = 'watching';
@@ -108,8 +117,10 @@ wss.on('connection', function (ws, _req) {
                     res_role = 'black';
                     if (game.black.ws) {
                         ws.send(JSON.stringify({
-                            type: 'error'
+                            type: 'error',
+                            errorType: 'link-already-clicked'
                         }));
+                        ws.close();
                         return;
                     }
                     connections.set(connectionID, gameId);
@@ -119,8 +130,10 @@ wss.on('connection', function (ws, _req) {
                     res_role = 'white';
                     if (game.white.ws) {
                         ws.send(JSON.stringify({
-                            type: 'error'
+                            type: 'error',
+                            errorType: 'link-already-clicked'
                         }));
+                        ws.close();
                         return;
                     }
                     connections.set(connectionID, gameId);
@@ -157,18 +170,22 @@ wss.on('connection', function (ws, _req) {
             });
         }
     });
-    ws.on('close', function () {
-        var gameId = connections.get(connectionID);
-        if (gameId) {
-            var game = games.get(gameId);
-            if (game) {
-                if (game.black.ws == ws || game.white.ws == ws) {
-                    var res_2 = {
+    ws.on('close', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var gameId, game, res_2, enemy, index, res;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    gameId = connections.get(connectionID);
+                    if (!gameId) return [3 /*break*/, 3];
+                    game = games.get(gameId);
+                    if (!game) return [3 /*break*/, 3];
+                    if (!(game.black.ws == ws || game.white.ws == ws)) return [3 /*break*/, 2];
+                    res_2 = {
                         type: 'playerLeave',
                         color: ''
                     };
                     res_2.color = game.black.ws === ws ? 'black' : 'white';
-                    var enemy = game.white.ws === ws ? game.black.ws : game.white.ws;
+                    enemy = game.white.ws === ws ? game.black.ws : game.white.ws;
                     if (enemy) {
                         enemy.send(JSON.stringify(res_2));
                         game.watchers.forEach(function (w) {
@@ -176,13 +193,21 @@ wss.on('connection', function (ws, _req) {
                             w.close();
                         });
                     }
+                    return [4 /*yield*/, (0, db_1.post)('games', 'insertOne', {
+                            document: {
+                                _id: gameId,
+                                moves: game.moves
+                            }
+                        })];
+                case 1:
+                    _a.sent();
                     games["delete"](gameId);
-                }
-                else {
-                    var index = game.watchers.indexOf(ws);
+                    return [3 /*break*/, 3];
+                case 2:
+                    index = game.watchers.indexOf(ws);
                     if (index !== -1) {
                         game.watchers.splice(index, 1);
-                        var res = {
+                        res = {
                             type: 'watcherLeave'
                         };
                         if (game.black.ws) {
@@ -192,30 +217,39 @@ wss.on('connection', function (ws, _req) {
                             game.white.ws.send(JSON.stringify(res));
                         }
                     }
-                }
+                    _a.label = 3;
+                case 3: return [2 /*return*/];
             }
-        }
-    });
+        });
+    }); });
 });
-app.get('/', function (_req, res) {
-    res.status(200).send('Hello API');
-});
-app.get('/test', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var newdata;
+app.post('/games', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var gameId, game;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, db_1.post)('games', 'insertOne', {
-                    document: {
-                        test: 'test'
-                    }
-                })];
+            case 0:
+                gameId = req.body.gameId;
+                return [4 /*yield*/, (0, db_1.post)('games', 'findOne', {
+                        filter: {
+                            _id: gameId
+                        }
+                    })];
             case 1:
-                newdata = _a.sent();
-                res.status(201).send(JSON.stringify(newdata));
+                game = _a.sent();
+                res.status(200).send(JSON.stringify(game.document));
                 return [2 /*return*/];
         }
     });
 }); });
+app.get('/gameCount', function (_req, res) {
+    res.status(200).send(JSON.stringify({
+        current: games.size,
+        played: ''
+    }));
+});
+app.get('/', function (_req, res) {
+    res.status(200).send('Hello API');
+});
 var PORT = process.env.PORT || 3333;
 httpServer.listen(PORT, function () {
     console.log('Server listening at port ' + PORT);

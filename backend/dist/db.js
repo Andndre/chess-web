@@ -53,13 +53,11 @@ exports.__esModule = true;
 exports.post = void 0;
 var cross_fetch_1 = __importDefault(require("cross-fetch"));
 var post = function (collection, action, query) { return __awaiter(void 0, void 0, void 0, function () {
-    var URL_1, options, response, json, err_1;
+    var URL, options, response, json;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
-                URL_1 = "".concat(process.env.DB_URL, "/action/").concat(action);
-                console.log(URL_1);
+                URL = "".concat(process.env.DB_URL, "/action/").concat(action);
                 options = {
                     method: 'POST',
                     headers: {
@@ -68,19 +66,13 @@ var post = function (collection, action, query) { return __awaiter(void 0, void 
                     },
                     body: JSON.stringify(__assign({ dataSource: 'Chess', database: 'chess_db', collection: collection }, query))
                 };
-                console.log(options);
-                return [4 /*yield*/, (0, cross_fetch_1["default"])(URL_1, options)];
+                return [4 /*yield*/, (0, cross_fetch_1["default"])(URL, options)];
             case 1:
                 response = _a.sent();
                 return [4 /*yield*/, response.json()];
             case 2:
                 json = _a.sent();
                 return [2 /*return*/, json];
-            case 3:
-                err_1 = _a.sent();
-                console.error(err_1);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/, {}];
         }
     });
 }); };

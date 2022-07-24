@@ -31,14 +31,27 @@ const games = new Map<string, Game>();
 const connections = new Map<string, string>();
 
 const app = express();
-app.use(cors());
+app.use(
+	cors({
+		origin: [
+			'https://chess-web-ten.vercel.app/',
+			'https://chess-web-ten.vercel.app/online',
+			'https://chess-web-ten.vercel.app/online/replay',
+		],
+		// origin: [
+		// 	'http://localhost:3000',
+		// 	'http://localhost:3000/online',
+		// 	'http://localhost:3000/online/replay',
+		// ],
+	})
+);
 app.use(express.json());
 
 const httpServer = createServer(app);
 
 const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
 
-app.get('/create', (_req, res) => {
+app.get('/create', (req, res) => {
 	const whiteId = v4();
 	const blackId = v4();
 	const gameId = v4();
@@ -55,7 +68,7 @@ app.get('/create', (_req, res) => {
 		moves: [],
 	});
 
-	// delete game when no one is playing the game in 6 minutes
+	// delete game when no one is playing the game in 3 minutes
 	setTimeout(
 		() => {
 			const game = games.get(gameId);
@@ -65,8 +78,8 @@ app.get('/create', (_req, res) => {
 				console.log('closing game (' + gameId + ') due to inactivity');
 			}
 		},
-		// 6 minutes
-		1000 * 60 * 6
+		// 3 minutes
+		1000 * 60 * 3
 	);
 
 	res.status(201).send(
@@ -102,7 +115,13 @@ wss.on('connection', (ws, _req) => {
 			let res_role = '';
 			if (roleKey === game.watchKey) {
 				res_role = 'watching';
+				const res = JSON.stringify({
+					type: 'watcherJoin',
+				});
+				game.watchers.forEach((w) => w.send(res));
 				game.watchers.push(ws);
+				game.white.ws?.send(res);
+				game.black.ws?.send(res);
 				connections.set(connectionID, gameId);
 			} else {
 				if (roleKey === game.black.id) {
@@ -118,6 +137,13 @@ wss.on('connection', (ws, _req) => {
 						return;
 					}
 					connections.set(connectionID, gameId);
+					if (game.white.ws) {
+						const res = JSON.stringify({
+							type: 'start',
+						});
+						game.white.ws.send(res);
+						game.watchers.forEach((w) => w.send(res));
+					}
 					game.black.ws = ws;
 				} else if (roleKey === game.white.id) {
 					res_role = 'white';
@@ -132,6 +158,13 @@ wss.on('connection', (ws, _req) => {
 						return;
 					}
 					connections.set(connectionID, gameId);
+					if (game.black.ws) {
+						const res = JSON.stringify({
+							type: 'start',
+						});
+						game.black.ws.send(res);
+						game.watchers.forEach((w) => w.send(res));
+					}
 					game.white.ws = ws;
 				}
 			}
@@ -139,6 +172,8 @@ wss.on('connection', (ws, _req) => {
 				type: 'connectToGame',
 				role: res_role,
 				moves: game.moves,
+				watchers: game.watchers.length,
+				waiting: !game.white.ws || !game.black.ws,
 			});
 			ws.send(res);
 		} else if (json.type === 'move') {
@@ -170,6 +205,7 @@ wss.on('connection', (ws, _req) => {
 			const game = games.get(gameId);
 			if (game) {
 				if (game.black.ws == ws || game.white.ws == ws) {
+					// on player leave
 					const res = {
 						type: 'playerLeave',
 						color: '',
@@ -183,16 +219,19 @@ wss.on('connection', (ws, _req) => {
 							w.close();
 						});
 					}
-					await post('games', 'insertOne', {
-						document: {
-							_id: gameId,
-							moves: game.moves,
-						},
-					});
+					if (game.moves.length) {
+						await post('games', 'insertOne', {
+							document: {
+								_id: gameId,
+								moves: game.moves,
+							},
+						});
+					}
 					games.delete(gameId);
 				} else {
 					const index = game.watchers.indexOf(ws);
 					if (index !== -1) {
+						// on watcher leave
 						game.watchers.splice(index, 1);
 						const res = {
 							type: 'watcherLeave',
@@ -220,6 +259,15 @@ app.post('/games', async (req, res) => {
 	});
 
 	res.status(200).send(JSON.stringify(game.document));
+});
+
+app.get('/gameCount', async (_req, res) => {
+	res.status(200).send(
+		JSON.stringify({
+			current: games.size,
+			played: (await post('games', 'find', {})).documents.length,
+		})
+	);
 });
 
 app.get('/', (_req, res) => {

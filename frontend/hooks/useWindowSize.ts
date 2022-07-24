@@ -10,7 +10,7 @@ export interface Size {
 	height: number;
 }
 
-export function useWindowSize(): Size {
+export function useWindowSize(xPadding: number, yPadding: number): Size {
 	// Initialize state with undefined width/height so server and client renders match
 	// Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
 	const [windowSize, setWindowSize] = useState<Size>({
@@ -22,8 +22,8 @@ export function useWindowSize(): Size {
 		function handleResize() {
 			// Set window width/height to state
 			setWindowSize({
-				width: window.innerWidth,
-				height: window.innerHeight,
+				width: window.innerWidth - xPadding,
+				height: window.innerHeight - yPadding,
 			});
 		}
 		// Add event listener
