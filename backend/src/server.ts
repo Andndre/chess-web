@@ -33,16 +33,8 @@ const connections = new Map<string, string>();
 const app = express();
 app.use(
 	cors({
-		origin: [
-			'https://chess-web-ten.vercel.app/',
-			'https://chess-web-ten.vercel.app/online',
-			'https://chess-web-ten.vercel.app/online/replay',
-		],
-		// origin: [
-		// 	'http://localhost:3000',
-		// 	'http://localhost:3000/online',
-		// 	'http://localhost:3000/online/replay',
-		// ],
+		origin: 'https://chess-web-ten.vercel.app*',
+		// origin: 'http://localhost:3000*',
 	})
 );
 app.use(express.json());
