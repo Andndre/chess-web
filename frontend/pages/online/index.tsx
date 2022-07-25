@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import ChessOnline from '../../components/ChessOnline';
+import { MessageContainer } from '../../components/MessageContainer';
 
 function App() {
 	const router = useRouter();
