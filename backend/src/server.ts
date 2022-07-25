@@ -43,7 +43,7 @@ const httpServer = createServer(app);
 
 const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
 
-app.get('/create', (req, res) => {
+app.get('/create', (_req, res) => {
 	const whiteId = v4();
 	const blackId = v4();
 	const gameId = v4();
@@ -65,7 +65,7 @@ app.get('/create', (req, res) => {
 		() => {
 			const game = games.get(gameId);
 			if (!game) return;
-			if (!game.black.ws || !game.white.ws) {
+			if (!game.black.ws && !game.white.ws) {
 				games.delete(gameId);
 				console.log('closing game (' + gameId + ') due to inactivity');
 			}
