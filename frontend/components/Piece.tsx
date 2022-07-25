@@ -12,7 +12,7 @@ export default function PieceBase(props: IPiece) {
 				<img
 					src={props.image}
 					alt="piece image"
-					className="w-full h-full object-cover"
+					className="object-cover w-full h-full"
 				/>
 			</div>
 		</>

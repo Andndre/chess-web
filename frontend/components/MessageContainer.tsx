@@ -4,7 +4,7 @@ interface IMessageContainer {
 
 export function MessageContainer(props: IMessageContainer) {
 	return (
-		<div className="p-8 rounded-lg bg-white max-w-2xl text-center flex flex-col gap-3 items-center shadow-lg">
+		<div className="flex flex-col items-center max-w-2xl gap-3 p-8 text-center bg-white rounded-lg shadow-lg">
 			{props.children}
 		</div>
 	);

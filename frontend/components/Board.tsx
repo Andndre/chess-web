@@ -66,7 +66,7 @@ export default function Board(props: IBoard) {
 				width: props.size,
 				height: props.size,
 			}}
-			className={`shadow-lg rounded-md overflow-clip`}
+			className="rounded-md shadow-lg overflow-clip"
 		>
 			<div className="flex-col aspect-square">
 				{listOf8.map((y) => {

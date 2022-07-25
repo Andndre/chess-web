@@ -200,7 +200,7 @@ export default function ChessOnline(props: IBoard) {
 		return (
 			<div className="center">
 				<MessageContainer>
-					<h3 className="font-bold text-3xl">Game not Found</h3>
+					<h3 className="text-3xl font-bold">Game not Found</h3>
 					<p>
 						It looks like the game has already ended, or you entered the wrong
 						link. Try watching the replay right here.
@@ -216,8 +216,8 @@ export default function ChessOnline(props: IBoard) {
 	}
 
 	return (
-		<div className="h-screen w-full flex flex-col">
-			<div className="w-full flex justify-center items-center h-14">
+		<div className="flex flex-col w-full h-screen">
+			<div className="flex items-center justify-center w-full h-14">
 				<p className="font-medium">{watchers} watching</p>
 			</div>
 			{/* TODO: popup */}
@@ -236,7 +236,7 @@ export default function ChessOnline(props: IBoard) {
 					</div>
 				</MessageContainer>
 			</Popup> */}
-			<div className="w-full h-full flex justify-center items-center">
+			<div className="flex items-center justify-center w-full h-full">
 				<Board
 					game={game}
 					size={boardSize}
