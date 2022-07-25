@@ -6,7 +6,11 @@ function App() {
 	const router = useRouter();
 
 	if (!router.query.gameId || !router.query.roleKey)
-		return <div className="center">Reading Input..</div>;
+		return (
+			<div className="center">
+				<MessageContainer>Reading Input..</MessageContainer>
+			</div>
+		);
 
 	return (
 		<>
