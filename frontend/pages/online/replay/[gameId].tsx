@@ -46,8 +46,10 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-	// const res = await fetch('https://chess-web-production.up.railway.app/allGames')
-	const res = await fetch('http://localhost:3333/allGames');
+	const res = await fetch(
+		'https://chess-web-production.up.railway.app/allGames'
+	);
+	// const res = await fetch('http://localhost:3333/allGames');
 	const json = await res.json();
 	const paths = json.games.map((game: Game) => ({
 		params: { gameId: game._id },
