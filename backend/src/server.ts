@@ -262,6 +262,14 @@ app.get('/gameCount', async (_req, res) => {
 	);
 });
 
+app.get('/allGames', async (_req, res) => {
+	res.status(200).send(
+		JSON.stringify({
+			games: (await post('games', 'find', {})).documents,
+		})
+	);
+});
+
 app.get('/', (_req, res) => {
 	res.status(200).send('Hello API');
 });
