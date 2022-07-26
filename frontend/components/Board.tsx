@@ -1,6 +1,5 @@
-import { ChessGame, Color, Type, Utils } from 'chess_typescript';
+import { ChessGame, Color, Type, Utils, getIndex } from 'chess_typescript';
 import { Piece } from './Piece';
-import { getIndex } from 'chess_typescript';
 
 interface IBoard {
 	game: ChessGame;
