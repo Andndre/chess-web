@@ -50,7 +50,10 @@ var db_1 = require("./db");
 var games = new Map();
 var connections = new Map();
 var app = (0, express_1["default"])();
-app.use((0, cors_1["default"])());
+app.use((0, cors_1["default"])({
+    // origin: 'https://chess-web-ten.vercel.app*',
+    origin: 'http://localhost:3000*'
+}));
 app.use(express_1["default"].json());
 var httpServer = (0, http_1.createServer)(app);
 var wss = new ws_1.WebSocketServer({ server: httpServer, path: '/ws' });
@@ -70,8 +73,7 @@ app.get('/create', function (req, res) {
         watchers: [],
         moves: []
     });
-    console.log(req.url + ' created a new game');
-    // delete game when no one is playing the game in 6 minutes
+    // delete game when no one is playing the game in 3 minutes
     setTimeout(function () {
         var game = games.get(gameId);
         if (!game)
@@ -81,8 +83,8 @@ app.get('/create', function (req, res) {
             console.log('closing game (' + gameId + ') due to inactivity');
         }
     }, 
-    // 6 minutes
-    1000 * 60 * 6);
+    // 3 minutes
+    1000 * 60 * 3);
     res.status(201).send(JSON.stringify({
         gameId: gameId,
         whiteId: whiteId,
@@ -93,6 +95,7 @@ app.get('/create', function (req, res) {
 wss.on('connection', function (ws, _req) {
     var connectionID = (0, uuid_1.v4)();
     ws.on('message', function (data) {
+        var _a, _b;
         var json = JSON.parse(data.toString());
         if (json.type === 'connectToGame') {
             var roleKey = json.roleKey;
@@ -109,7 +112,13 @@ wss.on('connection', function (ws, _req) {
             var res_role = '';
             if (roleKey === game.watchKey) {
                 res_role = 'watching';
+                var res_1 = JSON.stringify({
+                    type: 'watcherJoin'
+                });
+                game.watchers.forEach(function (w) { return w.send(res_1); });
                 game.watchers.push(ws);
+                (_a = game.white.ws) === null || _a === void 0 ? void 0 : _a.send(res_1);
+                (_b = game.black.ws) === null || _b === void 0 ? void 0 : _b.send(res_1);
                 connections.set(connectionID, gameId);
             }
             else {
@@ -124,6 +133,13 @@ wss.on('connection', function (ws, _req) {
                         return;
                     }
                     connections.set(connectionID, gameId);
+                    if (game.white.ws) {
+                        var res_2 = JSON.stringify({
+                            type: 'start'
+                        });
+                        game.white.ws.send(res_2);
+                        game.watchers.forEach(function (w) { return w.send(res_2); });
+                    }
                     game.black.ws = ws;
                 }
                 else if (roleKey === game.white.id) {
@@ -137,62 +153,72 @@ wss.on('connection', function (ws, _req) {
                         return;
                     }
                     connections.set(connectionID, gameId);
+                    if (game.black.ws) {
+                        var res_3 = JSON.stringify({
+                            type: 'start'
+                        });
+                        game.black.ws.send(res_3);
+                        game.watchers.forEach(function (w) { return w.send(res_3); });
+                    }
                     game.white.ws = ws;
                 }
             }
             var res = JSON.stringify({
                 type: 'connectToGame',
                 role: res_role,
-                moves: game.moves
+                moves: game.moves,
+                watchers: game.watchers.length,
+                waiting: !game.white.ws || !game.black.ws
             });
             ws.send(res);
         }
         else if (json.type === 'move') {
             var move = json.move;
             var game = games.get(json.gameId);
-            var res_1 = JSON.stringify({
+            var res_4 = JSON.stringify({
                 type: 'move',
                 move: move
             });
             game.moves.push(move);
             if (json.role === 'black') {
                 if (game.white.ws) {
-                    game.white.ws.send(res_1);
+                    game.white.ws.send(res_4);
                 }
             }
             else {
                 if (game.black.ws) {
-                    game.black.ws.send(res_1);
+                    game.black.ws.send(res_4);
                 }
             }
             game.watchers.forEach(function (w) {
-                w.send(res_1);
+                w.send(res_4);
             });
         }
     });
     ws.on('close', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var gameId, game, res_2, enemy, index, res;
+        var gameId, game, res_5, enemy, index, res;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     gameId = connections.get(connectionID);
-                    if (!gameId) return [3 /*break*/, 3];
+                    if (!gameId) return [3 /*break*/, 4];
                     game = games.get(gameId);
-                    if (!game) return [3 /*break*/, 3];
-                    if (!(game.black.ws == ws || game.white.ws == ws)) return [3 /*break*/, 2];
-                    res_2 = {
+                    if (!game) return [3 /*break*/, 4];
+                    if (!(game.black.ws == ws || game.white.ws == ws)) return [3 /*break*/, 3];
+                    res_5 = {
                         type: 'playerLeave',
                         color: ''
                     };
-                    res_2.color = game.black.ws === ws ? 'black' : 'white';
+                    res_5.color = game.black.ws === ws ? 'black' : 'white';
                     enemy = game.white.ws === ws ? game.black.ws : game.white.ws;
                     if (enemy) {
-                        enemy.send(JSON.stringify(res_2));
+                        enemy.send(JSON.stringify(res_5));
                         game.watchers.forEach(function (w) {
-                            w.send(JSON.stringify(res_2));
+                            w.send(JSON.stringify(res_5));
                             w.close();
                         });
                     }
+                    if (!game.moves.length) return [3 /*break*/, 2];
                     return [4 /*yield*/, (0, db_1.post)('games', 'insertOne', {
                             document: {
                                 _id: gameId,
@@ -201,11 +227,14 @@ wss.on('connection', function (ws, _req) {
                         })];
                 case 1:
                     _a.sent();
-                    games["delete"](gameId);
-                    return [3 /*break*/, 3];
+                    _a.label = 2;
                 case 2:
+                    games["delete"](gameId);
+                    return [3 /*break*/, 4];
+                case 3:
                     index = game.watchers.indexOf(ws);
                     if (index !== -1) {
+                        // on watcher leave
                         game.watchers.splice(index, 1);
                         res = {
                             type: 'watcherLeave'
@@ -217,8 +246,8 @@ wss.on('connection', function (ws, _req) {
                             game.white.ws.send(JSON.stringify(res));
                         }
                     }
-                    _a.label = 3;
-                case 3: return [2 /*return*/];
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
             }
         });
     }); });
@@ -241,12 +270,25 @@ app.post('/games', function (req, res) { return __awaiter(void 0, void 0, void 0
         }
     });
 }); });
-app.get('/gameCount', function (_req, res) {
-    res.status(200).send(JSON.stringify({
-        current: games.size,
-        played: ''
-    }));
-});
+app.get('/gameCount', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, _c, _d;
+    var _e;
+    return __generator(this, function (_f) {
+        switch (_f.label) {
+            case 0:
+                _b = (_a = res.status(200)).send;
+                _d = (_c = JSON).stringify;
+                _e = {
+                    current: games.size
+                };
+                return [4 /*yield*/, (0, db_1.post)('games', 'find', {})];
+            case 1:
+                _b.apply(_a, [_d.apply(_c, [(_e.played = (_f.sent()).documents.length,
+                            _e)])]);
+                return [2 /*return*/];
+        }
+    });
+}); });
 app.get('/', function (_req, res) {
     res.status(200).send('Hello API');
 });

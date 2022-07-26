@@ -21,14 +21,14 @@ export default function ChessOnline(props: IBoard) {
 	const [message, setMessage] = useState('Connecting...');
 	const [watchers, setWatchers] = useState(0);
 	const [watchReplay, setWatchReplay] = useState(false);
-	// TODO
-	// const [popup, setPopup] = useState(false);
-	// const [popupMessage, setPopupMessage] = useState('');
+	const [popup, setPopup] = useState(false);
+	const [popupMessage, setPopupMessage] = useState('');
+	const [gameOver, setGameOver] = useState(false);
 	const game = useMemo(() => ChessGame.newStandardGame(), []);
 	const windowSize = useWindowSize(0, 80);
 	const webSocket = useMemo(
-		() => new WebSocket('wss://chess-web-production.up.railway.app/ws'),
-		// () => new WebSocket('ws://localhost:3333/ws'),
+		// () => new WebSocket('wss://chess-web-production.up.railway.app/ws'),
+		() => new WebSocket('ws://localhost:3333/ws'),
 		[]
 	);
 
@@ -39,6 +39,12 @@ export default function ChessOnline(props: IBoard) {
 	}, [windowSize.width, windowSize.height]);
 
 	useEffect(() => {
+		game.onGameOver = () => {
+			setPopupMessage('Game Over!\n' + game.gameOverReason);
+			setPopup(true);
+			setFreezed(true);
+			setGameOver(true);
+		};
 		webSocket.onopen = (_ev) => {
 			webSocket.send(
 				JSON.stringify({
@@ -100,8 +106,17 @@ export default function ChessOnline(props: IBoard) {
 						setIsMessage(false);
 						break;
 					case 'playerLeave':
+						if (gameOver) break;
 						setIsMessage(true);
-						setMessage('Your opponent just quit the game...');
+						if (getRole() === 'watching') {
+							setMessage(
+								'A player just quit the game... reload this window to watch the replay'
+							);
+							break;
+						}
+						setMessage(
+							'Your opponent just quit the game... reload this window to watch the replay'
+						);
 						break;
 					case 'watcherJoin':
 						setWatchers((prev) => prev + 1);
@@ -205,7 +220,7 @@ export default function ChessOnline(props: IBoard) {
 						It looks like the game has already ended, or you entered the wrong
 						link. Try watching the replay right here.
 					</p>
-					<Link href={`/online/replay?gameId=${props.gameId}`}>
+					<Link href={`/online/replay/${props.gameId}`}>
 						<a className="px-5 py-3 bg-gray-700 border-gray-700 border-[6px] rounded-lg font-bold text-white">
 							Watch Replay
 						</a>
@@ -220,11 +235,13 @@ export default function ChessOnline(props: IBoard) {
 			<div className="flex items-center justify-center w-full h-14">
 				<p className="font-medium">{watchers} watching</p>
 			</div>
-			{/* TODO: popup */}
-			{/* <Popup open={popup} position="center center" closeOnDocumentClick={false}>
+			<Popup open={popup} position="center center" closeOnDocumentClick={false}>
 				<MessageContainer>
-					<div className="flex flex-col items-center">
-						{popupMessage}
+					<div className="flex flex-col items-center gap-3">
+						<h3 className="text-3xl font-bold">
+							{popupMessage.split('\n')[0]}
+						</h3>
+						<p>{popupMessage.split('\n')[1]}</p>
 						<button
 							onClick={() => {
 								setPopup(false);
@@ -235,7 +252,7 @@ export default function ChessOnline(props: IBoard) {
 						</button>
 					</div>
 				</MessageContainer>
-			</Popup> */}
+			</Popup>
 			<div className="flex items-center justify-center w-full h-full">
 				<Board
 					game={game}
