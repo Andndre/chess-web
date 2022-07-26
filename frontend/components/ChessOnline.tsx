@@ -27,8 +27,8 @@ export default function ChessOnline(props: IBoard) {
 	const game = useMemo(() => ChessGame.newStandardGame(), []);
 	const windowSize = useWindowSize(0, 80);
 	const webSocket = useMemo(
-		// () => new WebSocket('wss://chess-web-production.up.railway.app/ws'),
-		() => new WebSocket('ws://localhost:3333/ws'),
+		() => new WebSocket('wss://chess-web-production.up.railway.app/ws'),
+		// () => new WebSocket('ws://localhost:3333/ws'),
 		[]
 	);
 

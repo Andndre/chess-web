@@ -1,0 +1,3 @@
+[submodule "frontend/chess"]
+	path = frontend/chess
+	url = https://github.com/Andndre/chess.git
