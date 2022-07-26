@@ -28,8 +28,8 @@ function GameReplay(props: InferGetStaticPropsType<typeof getStaticProps>) {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
-	// const res = await fetch('https://chess-web-production.up.railway.app/games', {
-	const res = await fetch('http://localhost:3333/games', {
+	const res = await fetch('https://chess-web-production.up.railway.app/games', {
+		// const res = await fetch('http://localhost:3333/games', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
