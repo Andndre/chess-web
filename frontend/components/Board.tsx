@@ -27,11 +27,12 @@ export default function Board(props: IBoard) {
 		let col = '';
 		if (game.mover.history.length) {
 			const lastMove = Utils.lastElementInAnArray(game.mover.history);
-			if (lastMove.from.index === index) {
-				col = 'bg-[rgba(220,200,0,.3)]';
-			} else if (lastMove.to.index === index) {
-				col = 'bg-[rgba(250,200,0,.3)]';
-			}
+			if (lastMove)
+				if (lastMove.from.index === index) {
+					col = 'bg-[rgba(220,200,0,.3)]';
+				} else if (lastMove.to.index === index) {
+					col = 'bg-[rgba(250,200,0,.3)]';
+				}
 		}
 		if (selected >= 0 && selected < 64) {
 			const avMoves = game.mover.allMoves[selected];
@@ -49,7 +50,7 @@ export default function Board(props: IBoard) {
 		}
 		const color =
 			game.mover.current === Color.white ? Color.white : Color.black;
-		if (index === game.mover.checkIndex[color]) {
+		if (index === game.mover.getLastMove()?.check) {
 			return 'bg-[rgba(255,0,0,.5)]';
 		}
 		return col;
