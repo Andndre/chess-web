@@ -11,7 +11,6 @@ interface IBoard {
 	size: number;
 }
 
-// TODO: make this responsive (currently overflowed on small screen devices)
 export default function Board(props: IBoard) {
 	const getColor = (x: number, y: number) => {
 		return (x + y) % 2 == 0 ? 'darkTileColor' : 'lightTileColor';
@@ -48,8 +47,6 @@ export default function Board(props: IBoard) {
 		) {
 			return 'bg-[rgba(200,0,0,.5)]';
 		}
-		const color =
-			game.mover.current === Color.white ? Color.white : Color.black;
 		if (index === game.mover.getLastMove()?.check) {
 			return 'bg-[rgba(255,0,0,.5)]';
 		}
