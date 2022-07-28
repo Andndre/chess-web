@@ -10,7 +10,7 @@ interface IBoard {
 	asBlack: boolean;
 }
 
-export default function BoardOffline(props: IBoard) {
+export default function ChessOffline(props: IBoard) {
 	const [selected, setSelected] = useState(-1);
 	const [promoteIndex, setPromoteIndex] = useState(-1);
 	const windowSize = useWindowSize(0, 0);
@@ -25,18 +25,21 @@ export default function BoardOffline(props: IBoard) {
 			console.log('The game is over: ' + props.game.gameOverReason + '!');
 		};
 		if (props.asBlack && props.ai !== 'no-ai') {
-			const ai =
-				props.ai === 'easy'
-					? new AI.EasyAI(props.game)
-					: new AI.MonkeyAI(props.game);
-			const move = ai.getMove();
-			if (move) {
-				props.game.mover.moveStrict(move.from, move.to);
+			let aiMove: { from: number; to: number } | undefined;
+			switch (props.ai) {
+				case 'easy':
+					aiMove = new AI.EasyAI(props.game).getMove();
+					break;
+				case 'monkey':
+					aiMove = new AI.MonkeyAI(props.game).getMove();
+					break;
+			}
+			if (aiMove) {
+				props.game.mover.moveStrict(aiMove.from, aiMove.to);
 				props.game.mover.next();
 			}
-			setSelected(40);
+			setSelected((prev) => prev - 1);
 		}
-		console.log('asblack: ' + props.asBlack);
 	}, [props.asBlack, props.ai]);
 
 	const onPromoteSelected = (type: Type) => {
@@ -62,7 +65,7 @@ export default function BoardOffline(props: IBoard) {
 	const handleClick = (x: number, y: number) => {
 		if (props.game.gameOver) return;
 		const index = getIndex(x, y);
-		if (selected !== -1) {
+		if (selected >= 0) {
 			const avMoves = props.game.mover.allMoves[selected];
 			for (const avMove of avMoves) {
 				if (avMove.to.index === index) {
@@ -71,24 +74,29 @@ export default function BoardOffline(props: IBoard) {
 					console.log(lastMove);
 					if (props.game.mover.isPromote()) {
 						console.log('not the same type');
-
-						setPromoteIndex(lastMove.to.index);
+						setPromoteIndex(lastMove!.to.index);
 						return;
 					}
 					props.game.mover.next();
 					setSelected(-1);
 					if (props.ai !== 'no-ai') {
-						const ai =
-							props.ai === 'easy'
-								? new AI.EasyAI(props.game)
-								: new AI.MonkeyAI(props.game);
-						const move = ai.getMove();
-						if (move) {
-							props.game.mover.moveStrict(move.from, move.to);
+						let aiMove: { from: number; to: number } | undefined;
+						switch (props.ai) {
+							case 'easy':
+								aiMove = new AI.EasyAI(props.game).getMove();
+								break;
+							case 'monkey':
+								aiMove = new AI.MonkeyAI(props.game).getMove();
+								break;
+						}
+						if (aiMove) {
+							props.game.mover.moveStrict(aiMove.from, aiMove.to);
 							if (!props.game.gameOver) {
 								props.game.mover.next();
 							}
 						}
+						// rerender
+						setSelected((prev) => prev - 1);
 					}
 
 					return;

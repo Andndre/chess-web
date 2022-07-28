@@ -74,7 +74,7 @@ export default function ChessOnline(props: IBoard) {
 							game.mover.moveStrict(move.from, move.to);
 							if (move.becomeTo) {
 								const lastMove = game.mover.getLastMove();
-								game.board.tiles[lastMove.to.index].code = move.becomeTo;
+								game.board.tiles[lastMove!.to.index].code = move.becomeTo;
 							}
 							game.mover.next();
 						}
@@ -86,7 +86,7 @@ export default function ChessOnline(props: IBoard) {
 						game.mover.moveStrict(move.from, move.to);
 						if (move.becomeTo) {
 							const lastMove = game.mover.getLastMove();
-							game.board.tiles[lastMove.to.index].code = move.becomeTo;
+							game.board.tiles[lastMove!.to.index].code = move.becomeTo;
 						}
 						if (game.gameOver) {
 							webSocket.send(
@@ -151,7 +151,7 @@ export default function ChessOnline(props: IBoard) {
 	};
 
 	const onPromoteSelected = (type: Type) => {
-		const lastMove = game.mover.getLastMove();
+		const lastMove = game.mover.getLastMove()!;
 		game.mover.promoteLastMoveTo(type);
 		game.mover.next();
 		webSocket.send(
@@ -177,7 +177,7 @@ export default function ChessOnline(props: IBoard) {
 			for (const avMove of avMoves) {
 				if (avMove.to.index === index) {
 					game.mover.moveStrict(avMove.from.index, avMove.to.index);
-					const lastMove = game.mover.getLastMove();
+					const lastMove = game.mover.getLastMove()!;
 					setSelected(-1);
 					setFreezed(true);
 					if (game.mover.isPromote()) {
