@@ -162,7 +162,7 @@ export default function ChessOnline(props: IBoard) {
 				move: {
 					from: lastMove.from.index,
 					to: lastMove.to.index,
-					becomeTo: type,
+					becomeTo: type | (asBlack ? Color.black : Color.white),
 				},
 			})
 		);
