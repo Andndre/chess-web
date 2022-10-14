@@ -1,4 +1,4 @@
-import { ChessGame, Type, getIndex } from 'chess_typescript';
+import { ChessGame, Type, getIndex, Color } from 'chess_typescript';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import Popup from 'reactjs-popup';

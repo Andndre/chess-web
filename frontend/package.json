@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "chess_typescript": "file:chess/npm",
+    "chess_typescript": "^0.2.9",
     "next": "12.2.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
